@@ -29,34 +29,6 @@ An end-to-end NLP and Machine Learning application that detects **Positive**, **
 
 ---
 
-## 🚀 Getting Started
-
-### 1. Clone the Repository
-```bash
-git clone https://github.com/balazoro08/Sentiment-Analysis-System.git
-cd Sentiment-Analysis-System
-```
-
-### 2. Install Dependencies
-```bash
-pip install -r requirements.txt
-```
-
-### 3. Run the System
-```bash
-python app.py
-```
-Open your browser and navigate to: **`http://localhost:8000`**
-
----
-
-## 🧪 Running Unit Tests
-
-To run the automated NLP engine and classifier test suite:
-```bash
-python test_system.py
-```
-
 ---
 
 ## 📂 Project Structure
