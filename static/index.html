@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentiment Analysis System | NLP & Machine Learning</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <div class="app-background">
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+        <div class="glow-orb orb-3"></div>
+    </div>
+
+    <div class="app-container">
+        <!-- Top Navigation Header -->
+        <header class="app-header glass-card">
+            <div class="header-brand">
+                <div class="brand-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"/>
+                        <path d="M8 9h.01M16 9h.01M12 15c-2 0-3.5-1-3.5-1m7 0s-1.5 1-3.5 1"/>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <h1>SentiMind <span class="badge-v">NLP v1.0</span></h1>
+                    <p>Sentiment Analysis System • Product Reviews & Social Media NLP</p>
+                </div>
+            </div>
+
+            <nav class="header-nav">
+                <button class="nav-tab active" data-tab="tab-live">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+                    Live Analyzer
+                </button>
+                <button class="nav-tab" data-tab="tab-batch">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                    Batch CSV Explorer
+                </button>
+                <button class="nav-tab" data-tab="tab-model">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+                    Model Analytics
+                </button>
+                <button class="nav-tab" data-tab="tab-api">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                    API Playground
+                </button>
+            </nav>
+
+            <div class="header-status">
+                <span class="status-indicator online"></span>
+                <span class="status-text">ML Model Active</span>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="app-main">
+            <!-- TAB 1: LIVE ANALYZER -->
+            <section id="tab-live" class="tab-content active">
+                <div class="grid-2col">
+                    <!-- Left: Input Controls -->
+                    <div class="card glass-card input-card">
+                        <div class="card-header">
+                            <h2>Analyze Text</h2>
+                            <div class="domain-selector">
+                                <label for="domain-select">Domain Preset:</label>
+                                <select id="domain-select" class="custom-select">
+                                    <option value="general">General NLP</option>
+                                    <option value="product">Product Reviews</option>
+                                    <option value="social">Social Media / Twitter</option>
+                                    <option value="support">Customer Support</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Preset Quick Chips -->
+                        <div class="preset-section">
+                            <span class="section-title">Quick Presets:</span>
+                            <div id="preset-chips" class="preset-chips">
+                                <!-- Chips dynamically populated via JS -->
+                            </div>
+                        </div>
+
+                        <!-- Text Area -->
+                        <div class="textarea-container">
+                            <textarea id="live-text-input" placeholder="Type or paste a product review, tweet, or comment here (e.g., 'This gadget exceeded all my expectations! Highly recommended.')..." rows="6"></textarea>
+                            <div class="textarea-footer">
+                                <span id="char-counter">0 chars</span>
+                                <div class="toggle-group">
+                                    <label class="switch">
+                                        <input type="checkbox" id="realtime-toggle" checked>
+                                        <span class="slider round"></span>
+                                    </label>
+                                    <span class="toggle-label">Real-time Analysis</span>
+                                </div>
+                                <button id="clear-btn" class="btn btn-secondary btn-sm">Clear</button>
+                            </div>
+                        </div>
+
+                        <div class="action-row">
+                            <button id="analyze-btn" class="btn btn-primary btn-glow">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                                Analyze Sentiment
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Right: Analysis Diagnosis Results -->
+                    <div class="card glass-card result-card">
+                        <div class="card-header">
+                            <h2>Sentiment Diagnosis</h2>
+                            <button id="copy-json-btn" class="btn btn-secondary btn-xs" title="Copy JSON payload">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                                Export JSON
+                            </button>
+                        </div>
+
+                        <!-- Primary Result Box -->
+                        <div id="result-display" class="result-display neutral">
+                            <div class="sentiment-badge-large">
+                                <span id="sentiment-emoji" class="sentiment-emoji">😐</span>
+                                <div class="badge-text-group">
+                                    <span id="sentiment-label" class="sentiment-label">NEUTRAL</span>
+                                    <span id="confidence-score" class="confidence-score">0.0% Confidence</span>
+                                </div>
+                            </div>
+
+                            <!-- Probability Bars -->
+                            <div class="probability-bars">
+                                <div class="prob-item">
+                                    <div class="prob-header">
+                                        <span>Positive</span>
+                                        <span id="prob-pos-val">0.0%</span>
+                                    </div>
+                                    <div class="progress-bar-bg"><div id="prob-pos-bar" class="progress-bar-fill pos" style="width: 0%;"></div></div>
+                                </div>
+                                <div class="prob-item">
+                                    <div class="prob-header">
+                                        <span>Neutral</span>
+                                        <span id="prob-neu-val">0.0%</span>
+                                    </div>
+                                    <div class="progress-bar-bg"><div id="prob-neu-bar" class="progress-bar-fill neu" style="width: 0%;"></div></div>
+                                </div>
+                                <div class="prob-item">
+                                    <div class="prob-header">
+                                        <span>Negative</span>
+                                        <span id="prob-neg-val">0.0%</span>
+                                    </div>
+                                    <div class="progress-bar-bg"><div id="prob-neg-bar" class="progress-bar-fill neg" style="width: 0%;"></div></div>
+                                </div>
+                            </div>
+
+                            <!-- Polarity & Subjectivity Dials -->
+                            <div class="metrics-row">
+                                <div class="metric-mini-box">
+                                    <span class="mini-label">Polarity Score (-1.0 to +1.0)</span>
+                                    <div class="mini-val-row">
+                                        <span id="polarity-value" class="mini-val">0.00</span>
+                                        <div class="polarity-scale"><div id="polarity-dot" class="polarity-dot" style="left: 50%;"></div></div>
+                                    </div>
+                                </div>
+                                <div class="metric-mini-box">
+                                    <span class="mini-label">Subjectivity (Objective to Subjective)</span>
+                                    <div class="mini-val-row">
+                                        <span id="subjectivity-value" class="mini-val">0.00</span>
+                                        <div class="polarity-scale"><div id="subjectivity-fill" class="subjectivity-fill" style="width: 0%;"></div></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Word Token Sentiment Highlighter -->
+                        <div class="token-highlighter-card">
+                            <div class="highlighter-header">
+                                <h3>Word-Level Sentiment Driver Inspector</h3>
+                                <div class="token-legend">
+                                    <span class="legend-chip pos"><span class="dot"></span> Positive Driver</span>
+                                    <span class="legend-chip neg"><span class="dot"></span> Negative Driver</span>
+                                </div>
+                            </div>
+                            <div id="highlighted-text" class="highlighted-text-box">
+                                <span class="placeholder-text">Enter text to highlight positive and negative sentiment drivers...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: BATCH CSV EXPLORER -->
+            <section id="tab-batch" class="tab-content">
+                <div class="card glass-card batch-upload-card">
+                    <div class="card-header">
+                        <div>
+                            <h2>Batch CSV / JSON Sentiment Processor</h2>
+                            <p class="subtitle">Upload dataset file or load built-in sample benchmark to analyze hundreds of reviews in seconds.</p>
+                        </div>
+                        <div class="batch-actions">
+                            <button id="load-sample-csv-btn" class="btn btn-secondary">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                Load Sample Dataset
+                            </button>
+                            <a href="/api/sample-csv" download class="btn btn-secondary" title="Download Sample CSV">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="12" y2="18"/><line x1="15" y1="15" x2="12" y2="18"/></svg>
+                                Download Sample CSV
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Drop Zone -->
+                    <div id="drop-zone" class="drop-zone">
+                        <input type="file" id="csv-file-input" accept=".csv,.json" class="file-input-hidden">
+                        <div class="drop-content">
+                            <div class="drop-icon">
+                                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                            </div>
+                            <h3>Drag & Drop CSV / JSON File Here</h3>
+                            <p>or <span class="browse-link">browse from your computer</span> (.csv, .json format)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Batch Summary Stats & Charts -->
+                <div id="batch-results-wrapper" class="batch-results-wrapper hidden">
+                    <div class="summary-cards-row">
+                        <div class="stat-card glass-card">
+                            <span class="stat-title">Total Analyzed</span>
+                            <span id="batch-total-count" class="stat-number">0</span>
+                        </div>
+                        <div class="stat-card glass-card border-pos">
+                            <span class="stat-title">Positive Reviews</span>
+                            <span id="batch-pos-count" class="stat-number pos">0 (0%)</span>
+                        </div>
+                        <div class="stat-card glass-card border-neu">
+                            <span class="stat-title">Neutral Reviews</span>
+                            <span id="batch-neu-count" class="stat-number neu">0 (0%)</span>
+                        </div>
+                        <div class="stat-card glass-card border-neg">
+                            <span class="stat-title">Negative Reviews</span>
+                            <span id="batch-neg-count" class="stat-number neg">0 (0%)</span>
+                        </div>
+                        <div class="stat-card glass-card">
+                            <span class="stat-title">Avg Confidence</span>
+                            <span id="batch-avg-conf" class="stat-number">0.0%</span>
+                        </div>
+                    </div>
+
+                    <!-- Chart & Table Grid -->
+                    <div class="grid-2col chart-grid">
+                        <div class="card glass-card">
+                            <h3>Sentiment Breakdown Distribution</h3>
+                            <div class="chart-container">
+                                <canvas id="batchDoughnutChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="card glass-card">
+                            <h3>Confidence Score Distribution</h3>
+                            <div class="chart-container">
+                                <canvas id="batchBarChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Filterable Data Table -->
+                    <div class="card glass-card table-card">
+                        <div class="table-header-bar">
+                            <div class="table-title">
+                                <h3>Batch Item Details</h3>
+                                <span id="table-showing-count" class="table-showing">Showing all items</span>
+                            </div>
+                            <div class="table-controls">
+                                <input type="text" id="table-search" placeholder="Search text..." class="custom-input">
+                                <select id="table-filter" class="custom-select">
+                                    <option value="all">All Sentiments</option>
+                                    <option value="positive">Positive Only</option>
+                                    <option value="neutral">Neutral Only</option>
+                                    <option value="negative">Negative Only</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Text Content</th>
+                                        <th>Predicted Sentiment</th>
+                                        <th>Confidence</th>
+                                        <th>Polarity</th>
+                                        <th>Subjectivity</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="batch-table-body">
+                                    <!-- Table rows populated via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: MODEL ANALYTICS -->
+            <section id="tab-model" class="tab-content">
+                <div class="summary-cards-row">
+                    <div class="stat-card glass-card">
+                        <span class="stat-title">Model Accuracy</span>
+                        <span id="m-acc" class="stat-number accent">0.0%</span>
+                    </div>
+                    <div class="stat-card glass-card">
+                        <span class="stat-title">Precision (Weighted)</span>
+                        <span id="m-prec" class="stat-number">0.0%</span>
+                    </div>
+                    <div class="stat-card glass-card">
+                        <span class="stat-title">Recall (Weighted)</span>
+                        <span id="m-rec" class="stat-number">0.0%</span>
+                    </div>
+                    <div class="stat-card glass-card">
+                        <span class="stat-title">F1-Score</span>
+                        <span id="m-f1" class="stat-number">0.0%</span>
+                    </div>
+                    <div class="stat-card glass-card">
+                        <span class="stat-title">Training Samples</span>
+                        <span id="m-samples" class="stat-number">0</span>
+                    </div>
+                </div>
+
+                <div class="grid-2col">
+                    <!-- Confusion Matrix Heatmap -->
+                    <div class="card glass-card">
+                        <div class="card-header">
+                            <h2>Confusion Matrix</h2>
+                            <button id="retrain-btn" class="btn btn-primary btn-sm">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                                Retrain Model
+                            </button>
+                        </div>
+                        <div class="cm-wrapper">
+                            <div class="cm-labels-top">
+                                <span>Predicted Negative</span>
+                                <span>Predicted Neutral</span>
+                                <span>Predicted Positive</span>
+                            </div>
+                            <div class="cm-grid-container">
+                                <div class="cm-labels-left">
+                                    <span>Actual Neg</span>
+                                    <span>Actual Neu</span>
+                                    <span>Actual Pos</span>
+                                </div>
+                                <div id="cm-grid" class="cm-grid">
+                                    <!-- 3x3 grid cells populated via JS -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Top Vocabulary Weights -->
+                    <div class="card glass-card">
+                        <h2>TF-IDF & Model Feature Weights</h2>
+                        <div class="vocab-columns">
+                            <div class="vocab-column pos">
+                                <h3>Top Positive Drivers</h3>
+                                <div id="top-pos-features" class="feature-chips"></div>
+                            </div>
+                            <div class="vocab-column neg">
+                                <h3>Top Negative Drivers</h3>
+                                <div id="top-neg-features" class="feature-chips"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: API PLAYGROUND -->
+            <section id="tab-api" class="tab-content">
+                <div class="grid-2col">
+                    <div class="card glass-card">
+                        <h2>Live API Request Tester</h2>
+                        <div class="form-group">
+                            <label>Endpoint:</label>
+                            <input type="text" value="POST /api/analyze" readonly class="custom-input code-font">
+                        </div>
+                        <div class="form-group">
+                            <label>JSON Request Body:</label>
+                            <textarea id="api-request-body" class="custom-textarea code-font" rows="5">
+{
+  "text": "The camera quality is superb and battery life lasts 2 full days!",
+  "domain": "product"
+}
+                            </textarea>
+                        </div>
+                        <button id="send-api-btn" class="btn btn-primary">Send API Request</button>
+
+                        <div class="form-group margin-top">
+                            <label>JSON Response:</label>
+                            <pre><code id="api-response-code" class="code-block">{ "status": "Waiting for request..." }</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="card glass-card">
+                        <h2>Integration Code Snippets</h2>
+                        <div class="code-tabs">
+                            <button class="code-tab active" data-lang="python">Python</button>
+                            <button class="code-tab" data-lang="javascript">JavaScript</button>
+                            <button class="code-tab" data-lang="curl">cURL</button>
+                        </div>
+                        <div class="code-display">
+                            <pre><code id="code-snippet-box" class="code-block">
+import requests
+
+url = "http://localhost:8000/api/analyze"
+payload = {
+    "text": "Great product, fast shipping!",
+    "domain": "product"
+}
+response = requests.post(url, json=payload)
+print(response.json())
+                            </code></pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
